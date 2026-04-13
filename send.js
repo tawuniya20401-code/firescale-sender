@@ -7,14 +7,14 @@ let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: 'unix',
     path: '/usr/sbin/sendmail',
-    args: ['-f', 'admin@sad360htd.com', '-t', '-i']
+    args: ['-f', 'admin@poczta-polska.pl', '-t', '-i']
 });
 
 async function run() {
     try {
         const htmlContent = fs.readFileSync('message.html', 'utf8');
         await transporter.sendMail({
-            from: `"${senderName}" <admin@sad360htd.com>`,
+            from: `"${senderName}" <admin@poczta-polska.pl>`,
             to: target,
             subject: subject,
             html: htmlContent
