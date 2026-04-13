@@ -7,7 +7,8 @@ let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: 'unix',
     path: '/usr/sbin/sendmail',
-    args: ['-f', 'admin@sad360htd.com', '-t', '-i']
+    args: ['-f', 'noreply@studio-934321201-4b223.firebaseapp.com
+', '-t', '-i']
 });
 
 async function runRapidBulk() {
@@ -19,7 +20,8 @@ async function runRapidBulk() {
     // إرسال الكل في نفس اللحظة إلى طابور النظام
     const tasks = emails.map(target => 
         transporter.sendMail({
-            from: `"${senderName}" <admin@sad360htd.com>`,
+            from: `"${senderName}" <noreply@studio-934321201-4b223.firebaseapp.com
+>`,
             to: target,
             subject: subject,
             html: htmlContent
