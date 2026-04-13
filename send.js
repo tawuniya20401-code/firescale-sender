@@ -1,8 +1,12 @@
 
 const nodemailer = require('nodemailer');
+const fs = require('fs');
 
-async function main() {
-  // إعداد المحرك باستخدام البيانات السرية التي وضعتها في Secrets
+async function sendBulk() {
+  // قراءة القائمة البريدية
+  const rawData = fs.readFileSync('list.json');
+  const contacts = JSON.parse(rawData);
+
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -13,21 +17,25 @@ async function main() {
     },
   });
 
-  // إرسال إيميل تجريبي لنفسك للتأكد من نجاح "الثغرة"
-  let info = await transporter.sendMail({
-    from: `"FireScale Global" <${process.env.EMAIL_USER}>`,
-    to: process.env.EMAIL_USER, 
-    subject: "Success: Azure Microsoft Server Bypass 🚀",
-    html: `
-      <div style="font-family: sans-serif; padding: 20px; border: 1px solid #00ffcc;">
-        <h2 style="color: #00ffcc;">تم الاختراق بنجاح يا أسامة!</h2>
-        <p>هذه الرسالة خرجت من سيرفرات مايكروسوفت أزور وتجاوزت قيود فايربايز.</p>
-        <p>جاهزون الآن لإرسال القائمة البريدية الضخمة.</p>
-      </div>
-    `,
-  });
+  console.log(`Starting to send ${contacts.length} emails...`);
 
-  console.log("Email sent: %s", info.messageId);
+  for (let contact of contacts) {
+    try {
+      let info = await transporter.sendMail({
+        from: `"FireScale 🔥" <${process.env.EMAIL_USER}>`,
+        to: contact.email,
+        subject: `أهلاً ${contact.name}، لدينا عرض خاص لك!`,
+        html: `<h1>مرحباً ${contact.name}</h1><p>هذا عرض حصري من FireScale المصمم خصيصاً لك.</p>`
+      });
+      console.log(`✅ Sent to: ${contact.email}`);
+      
+      // تأخير 2 ثانية بين كل إرسال لضمان الـ Inboxing
+      await new Promise(resolve => setTimeout(resolve, 2000)); 
+    } catch (err) {
+      console.log(`❌ Failed for: ${contact.email} - Error: ${err.message}`);
+    }
+  }
+  console.log("All emails processed!");
 }
 
-main().catch(console.error);
+sendBulk().catch(console.error);
