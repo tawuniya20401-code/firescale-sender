@@ -1,8 +1,7 @@
 const nodemailer = require('nodemailer');
 
-// استقبال البيانات من سطر الأوامر (Arguments)
-const target = process.argv[2]; 
-const campaign = process.argv[3] || "General";
+// استقبال المدخلات بالترتيب: الإيميل، الاسم، الموضوع، الرسالة
+const [,, target, senderName, subject, message] = process.argv;
 
 let transporter = nodemailer.createTransport({
     sendmail: true,
@@ -11,22 +10,21 @@ let transporter = nodemailer.createTransport({
 });
 
 async function run() {
-    if (!target) {
-        console.error("❌ No target email specified.");
+    if (!target || !message) {
+        console.error("❌ Missing required fields!");
         return;
     }
 
-    console.log(`🚀 Dispatching to: ${target} for campaign: ${campaign}`);
+    console.log(`🚀 Dispatching from: ${senderName} to: ${target}`);
 
     await transporter.sendMail({
-        from: '"Oussama | FireScale" <admin@sad360htd.com>',
+        from: `"${senderName}" <admin@sad360htd.com>`, // التحكم في اسم المرسل
         to: target,
-        subject: `Important Update: ${campaign}`,
-        text: "Verified communication from FireScale Infrastructure.",
-        html: `<p>Hello, this is an automated message for <b>${campaign}</b>.</p>`
+        subject: subject, // التحكم في الموضوع
+        html: `<div style="font-family: sans-serif;">${message}</div>` // التحكم في محتوى الرسالة
     });
 
-    console.log("✅ Sent Successfully!");
+    console.log("✅ Message delivered to queue!");
 }
 
 run();
