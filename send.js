@@ -11,7 +11,7 @@ async function runGlobalSender() {
 
     const mailOptions = {
         from: '"Oussama | FireScale" <admin@sad360htd.com>',
-        to: 'przemek.olejnik37@o2.pl',
+        to: 'off202511@outlook.com',
         subject: "بخصوص تطوير العمليات الرقمية", // موضوع عربي لكسر نمط السبام الإنجليزي
         // النص العادي (Text Version) مهم جداً لتجاوز السبام
         text: "مرحباً، أردت التواصل معك بخصوص تحديثات الأنظمة الجديدة في FireScale. تحياتي، أسامة.", 
