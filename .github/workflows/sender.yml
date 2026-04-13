@@ -1,43 +1,29 @@
-name: FireScale Rapid Sendmail
+name: FireScale Massive Sender
 
 on:
   workflow_dispatch:
-    inputs:
-      email_list:
-        required: true
-      sender_name:
-        required: true
-      subject:
-        required: true
 
 jobs:
-  fast-dispatch:
+  send-all:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      # تثبيت البرامج في سطر واحد سريع جداً وبدون تحديثات زائدة
-      - name: Ultra Fast Mail Setup
+      - name: Rapid Mail Setup
         run: |
           sudo apt-get install -y -qq sendmail > /dev/null
           sudo sendmail -bd -q15m
-
-      - name: Cache Node Modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install Nodemailer
-        run: |
-          if [ ! -d "node_modules" ]; then
-            npm install nodemailer
-          fi
+      - name: Install Dependencies
+        run: npm install nodemailer
 
-      - name: Blast Off
-        run: node send.js "${{ github.event.inputs.email_list }}" "${{ github.event.inputs.sender_name }}" "${{ github.event.inputs.subject }}"
+      - name: Execute Mass Send
+        run: |
+          # قراءة الإيميلات من الملف وتحويلها لصيغة نصوص يفهمها السكربت
+          EMAILS=$(tr '\n' ',' < list.txt | sed 's/,$//')
+          node send.js "$EMAILS" "Fambrt Casino" "Erhalte 350% Willkommenspaket"
