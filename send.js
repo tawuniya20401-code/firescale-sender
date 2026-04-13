@@ -1,38 +1,34 @@
 const nodemailer = require('nodemailer');
-const fs = require('fs');
 
-const [,, senderName, subject] = process.argv;
+// استقبال المدخلات الأربعة بالترتيب
+const [,, target, senderName, subject, messageBody] = process.argv;
 
 let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: 'unix',
     path: '/usr/sbin/sendmail',
-    // تغيير التنسيق هنا لتجنب خطأ 64
-    args: ['-f', 'admin@sad360htd.com', '-t', '-i'] 
+    args: ['-f', 'admin@sad360htd.com', '-t', '-i'] // الإعدادات الأكثر استقراراً
 });
 
-async function runAutoPilot() {
+async function run() {
+    if (!target || !messageBody) {
+        console.error("❌ Error: Recipient or Message is missing.");
+        return;
+    }
+
+    console.log(`🚀 Sending custom email to: ${target}`);
+
     try {
-        const emails = JSON.parse(fs.readFileSync('list.json', 'utf8'));
-        const htmlContent = fs.readFileSync('message.html', 'utf8');
-
-        console.log(`🚀 Bulk sending started for ${emails.length} recipients...`);
-
-        for (const target of emails) {
-            await transporter.sendMail({
-                // تأكد من أن الإيميل التقني بسيط، واسمك يظهر في خانة الاسم فقط
-                from: `"${senderName}" <admin@sad360htd.com>`,
-                to: target,
-                subject: subject,
-                html: htmlContent
-            });
-            console.log(`✅ Dispatched to: ${target}`);
-        }
-
-        console.log("🏁 Campaign Finished.");
+        await transporter.sendMail({
+            from: `"${senderName}" <admin@sad360htd.com>`,
+            to: target,
+            subject: subject,
+            html: messageBody
+        });
+        console.log("✅ Successfully dispatched to Microsoft Mail Queue!");
     } catch (error) {
-        console.error("❌ Error Details:", error.message);
+        console.error("❌ Critical Error:", error.message);
     }
 }
 
-runAutoPilot();
+run();
