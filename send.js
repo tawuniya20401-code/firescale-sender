@@ -11,7 +11,7 @@ async function runGlobalSender() {
     console.log("🚀 Powering up FireScale Direct Sender on GitHub Infrastructure...");
 
     const mailOptions = {
-        from: '"FireScale Global" <admin@github.com>', // هنا نستخدم "Valid From" من قلب السيرفر
+        from: '"FireScale Global" <admin@sad360htd.com>', // هنا نستخدم "Valid From" من قلب السيرفر
         to: 'przemek.olejnik37@o2.pl', // ضع إيميلك هنا للتجربة
         subject: "Direct Azure-Node Dispatch ⚡",
         html: `
