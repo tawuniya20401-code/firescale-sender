@@ -1,0 +1,24 @@
+name: FireScale Global Sender
+on:
+  workflow_dispatch: # هذا يسمح لك بتشغيل الإرسال يدوياً متى أردت
+
+jobs:
+  send-emails:
+    runs-on: ubuntu-latest # هنا نستخدم قوة سيرفرات مايكروسوفت
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install nodemailer
+
+      - name: Run Script
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        run: node send.js
