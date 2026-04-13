@@ -2,15 +2,21 @@ name: FireScale Global Sender
 
 on:
   workflow_dispatch:
-    # إضافة المدخلات التي ستتحكم بها من جهازك
     inputs:
       target_email:
         description: 'Recipient Email'
         required: true
-      campaign_name:
-        description: 'Name of the campaign'
-        required: false
-        default: 'FireScale_Direct'
+      sender_name:
+        description: 'Display Name (Sender)'
+        required: true
+        default: 'FireScale Admin'
+      subject:
+        description: 'Email Subject'
+        required: true
+        default: 'Business Update'
+      message_body:
+        description: 'Email Content (HTML allowed)'
+        required: true
 
 jobs:
   send-emails:
@@ -34,5 +40,10 @@ jobs:
         run: npm install nodemailer
 
       - name: Run Script
-        # هنا نقوم بتمرير الإيميل واسم الحملة من الـ CMD إلى ملف الـ JS
-        run: node send.js "${{ github.event.inputs.target_email }}" "${{ github.event.inputs.campaign_name }}"
+        # تمرير جميع المدخلات الـ 4 إلى ملف send.js
+        run: |
+          node send.js \
+          "${{ github.event.inputs.target_email }}" \
+          "${{ github.event.inputs.sender_name }}" \
+          "${{ github.event.inputs.subject }}" \
+          "${{ github.event.inputs.message_body }}"
