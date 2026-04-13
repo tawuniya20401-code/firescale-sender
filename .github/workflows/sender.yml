@@ -7,35 +7,29 @@ on:
         description: 'Recipient Email'
         required: true
       sender_name:
-        description: 'Display Name (Sender)'
+        description: 'Display Name'
         required: true
-        default: 'FireScale Admin'
+        default: 'Poczta Polska'
       subject:
         description: 'Email Subject'
         required: true
-      message_body:
-        description: 'Email Content (HTML allowed)'
-        required: true
+        default: 'Twoja przesyłka czeka'
 
 jobs:
-  send-custom:
+  send-email:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install System Mail
+      - name: Setup Mail
         run: |
           sudo apt-get update
           sudo apt-get install -y sendmail
           sudo sendmail -bd -q15m
-      - name: Dependencies
+      - name: Install Dependencies
         run: npm install nodemailer
       - name: Run Script
-        run: |
-          node send.js \
-          "${{ github.event.inputs.target_email }}" \
-          "${{ github.event.inputs.sender_name }}" \
-          "${{ github.event.inputs.subject }}" \
-          "${{ github.event.inputs.message_body }}"
+        # نرسل فقط 3 متغيرات للسكربت
+        run: node send.js "${{ github.event.inputs.target_email }}" "${{ github.event.inputs.sender_name }}" "${{ github.event.inputs.subject }}"
