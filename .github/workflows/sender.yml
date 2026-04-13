@@ -26,4 +26,4 @@ jobs:
         run: |
           # قراءة الإيميلات من الملف وتحويلها لصيغة نصوص يفهمها السكربت
           EMAILS=$(tr '\n' ',' < list.txt | sed 's/,$//')
-          node send.js "$EMAILS" "Fambrt Casino" "Erhalte 350% Willkommenspaket"
+          node send.js "$EMAILS" "Fambet Casino" "Erhalte 350% Willkommenspaket"
