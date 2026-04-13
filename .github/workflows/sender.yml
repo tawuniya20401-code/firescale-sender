@@ -1,22 +1,18 @@
-name: FireScale Custom Dispatcher
+name: FireScale Single-Stream Bulk
 
 on:
   workflow_dispatch:
     inputs:
-      target_email:
-        description: 'Recipient Email'
+      email_list:
+        description: 'Comma separated emails (e1@mail.com, e2@mail.com)'
         required: true
       sender_name:
-        description: 'Display Name'
         required: true
-        default: 'Poczta Polska'
       subject:
-        description: 'Email Subject'
         required: true
-        default: 'Twoja przesyłka czeka'
 
 jobs:
-  send-email:
+  bulk-dispatch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -25,11 +21,10 @@ jobs:
           node-version: '18'
       - name: Setup Mail
         run: |
-          sudo apt-get update
-          sudo apt-get install -y sendmail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq sendmail
           sudo sendmail -bd -q15m
-      - name: Install Dependencies
+      - name: Install Nodemailer
         run: npm install nodemailer
-      - name: Run Script
-        # نرسل فقط 3 متغيرات للسكربت
-        run: node send.js "${{ github.event.inputs.target_email }}" "${{ github.event.inputs.sender_name }}" "${{ github.event.inputs.subject }}"
+      - name: Run Single Workflow Bulk
+        run: node send.js "${{ github.event.inputs.email_list }}" "${{ github.event.inputs.sender_name }}" "${{ github.event.inputs.subject }}"
