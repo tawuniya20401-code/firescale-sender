@@ -1,0 +1,10 @@
+{
+  "name": "firescale-direct-sender",
+  "version": "1.0.0",
+  "description": "Sending emails directly from GitHub Servers",
+  "main": "send.js",
+  "dependencies": {
+    "nodemailer": "^6.9.0",
+    "nodemailer-direct-transport": "^3.3.2"
+  }
+}
