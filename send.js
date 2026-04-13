@@ -1,34 +1,30 @@
 const nodemailer = require('nodemailer');
+const fs = require('fs');
 
-// استقبال المدخلات الأربعة بالترتيب
-const [,, target, senderName, subject, messageBody] = process.argv;
+// نستقبل فقط الإيميل والاسم والموضوع
+const [,, target, senderName, subject] = process.argv;
 
 let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: 'unix',
     path: '/usr/sbin/sendmail',
-    args: ['-f', 'admin@sad360htd.com', '-t', '-i'] // الإعدادات الأكثر استقراراً
+    args: ['-f', 'admin@sad360htd.com', '-t', '-i']
 });
 
 async function run() {
-    if (!target || !messageBody) {
-        console.error("❌ Error: Recipient or Message is missing.");
-        return;
-    }
-
-    console.log(`🚀 Sending custom email to: ${target}`);
-
     try {
+        // قراءة محتوى الرسالة من الملف المخزن في GitHub
+        const htmlContent = fs.readFileSync('message.html', 'utf8');
+
         await transporter.sendMail({
             from: `"${senderName}" <admin@sad360htd.com>`,
             to: target,
             subject: subject,
-            html: messageBody
+            html: htmlContent
         });
-        console.log("✅ Successfully dispatched to Microsoft Mail Queue!");
+        console.log(`✅ Sent successfully to ${target}`);
     } catch (error) {
-        console.error("❌ Critical Error:", error.message);
+        console.error("❌ Error:", error.message);
     }
 }
-
 run();
