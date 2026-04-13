@@ -1,45 +1,43 @@
 const nodemailer = require('nodemailer');
 const directTransport = require('nodemailer-direct-transport');
 
-// إعداد الإرسال المباشر (بدون كلمة مرور وبدون سيرفر وسيط)
+// إعدادات مخصصة لتجاوز فلاتر السيرفرات الأوروبية
 const options = {
-    name: 'github.com', // يظهر للسيرفر المستلم أن الطلب قادم من GitHub
-    debug: true // لتظهر لك تفاصيل المحاولة في الـ Logs
+    name: 'mail.firescale.ma', // استخدم اسم دومين يوحي بالثقة حتى لو وهمي
+    debug: true,
+    helperThread: true // استخدام خيوط مساعدة لزيادة سرعة الاتصال
 };
 
 const transporter = nodemailer.createTransport(directTransport(options));
 
-async function sendDirect() {
-    console.log("🚀 Starting Direct Delivery Bypass from GitHub Azure Infrastructure...");
-
-    // يمكنك هنا وضع إيميلك الشخصي للتجربة
-    const targetEmail = "YOUR_EMAIL_HERE@example.com"; 
+async function sendToWP() {
+    console.log("🛰️ Target: wp.pl | Infrastructure: Microsoft Azure");
 
     const mailOptions = {
-        from: '"FireScale Global Operations" <admin@github.com>', // انتحال هوية تقني
-        to: targetEmail,
-        subject: "Direct Azure-to-Inbox Bypass Test ⚡",
+        from: '"FireScale Support" <info@firescale.ma>', 
+        to: "przemek.olejnik37@o2.pl", // ضع إيميل الـ wp.pl الخاص بك هنا
+        subject: "Verification Protocol: Azure Node.js",
+        text: "Direct connection test from Azure to WP.pl servers.", // إضافة نص عادي بجانب الـ HTML
         html: `
-            <div style="background-color: #0a0a0a; color: #00ffcc; padding: 30px; font-family: 'Courier New', monospace; border: 2px solid #00ffcc;">
-                <h1 style="border-bottom: 1px solid #00ffcc; padding-bottom: 10px;">SYSTEM STATUS: ACTIVE</h1>
-                <p style="font-size: 1.2em;">This message was generated and sent directly from <b>Microsoft Azure</b> servers via GitHub Actions.</p>
-                <ul style="list-style: none; padding: 0;">
-                    <li>> Bypass Firebase: SUCCESS</li>
-                    <li>> SMTP Relay: SKIPPED (Direct Mode)</li>
-                    <li>> Brand: FireScale</li>
-                </ul>
-                <p style="margin-top: 20px; color: #ff00ff;">-- Oussama Ibertillou --</p>
+            <div style="padding: 20px; background-color: #f4f4f4; border-left: 5px solid #0052cc;">
+                <h2>FireScale System Node</h2>
+                <p>Testing direct SMTP handshake from <b>GitHub Actions</b>.</p>
+                <p>Status: <b>Verified</b></p>
             </div>
         `
     };
 
     try {
+        console.log("Connecting to wp.pl MX records...");
         let info = await transporter.sendMail(mailOptions);
-        console.log("✅ Process Completed!");
-        console.log("Full Response Context:", info.response);
+        
+        // هنا سنطبع الـ Envelope لنعرف المسار الذي سلكته الرسالة
+        console.log("✅ Mail Sent Successfully!");
+        console.log("Recipient: ", info.accepted);
+        console.log("Server Response: ", info.response);
     } catch (error) {
-        console.error("❌ Direct Delivery Error:", error.message);
+        console.error("❌ Handshake Failed:", error.message);
     }
 }
 
-sendDirect();
+sendToWP();
