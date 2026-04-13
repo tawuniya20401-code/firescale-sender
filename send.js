@@ -1,38 +1,40 @@
 const nodemailer = require('nodemailer');
+const fs = require('fs');
 
-// استقبال المدخلات
-const [,, target, senderName, subject, message] = process.argv;
+// الآن نحتاج فقط لاسم المرسل والموضوع من الـ CMD
+const [,, senderName, subject] = process.argv;
 
-// إعداد المحرك لاستخدام Local Sendmail الخاص بسيرفرات مايكروسوفت
 let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: 'unix',
     path: '/usr/sbin/sendmail',
-    args: ['-f', 'root@localhost'] // إجبار المحرك على استخدام هوية السيرفر المحلية
+    args: ['-f', 'runner@github.com'] 
 });
 
-async function run() {
-    if (!target || !message) {
-        console.error("❌ Missing required fields!");
-        return;
-    }
-
-    // ملاحظة: سنبقي اسمك (FireScale) ولكن سنغير الإيميل ليكون مقبولاً تقنياً
-    const mailOptions = {
-        from: `"${senderName}" <admin@sad360htd.com>`, // استخدام دومين موثوق للسيرفر
-        to: target,
-        subject: subject,
-        html: `<div style="font-family: sans-serif;">${message}</div>`
-    };
-
-    console.log(`🚀 Dispatching from Microsoft Infrastructure to: ${target}`);
-
+async function runAutoPilot() {
     try {
-        await transporter.sendMail(mailOptions);
-        console.log("✅ Message accepted by Microsoft Mail Queue!");
+        // 1. قراءة قائمة الإيميلات
+        const emails = JSON.parse(fs.readFileSync('list.json', 'utf8'));
+        
+        // 2. قراءة محتوى الرسالة HTML
+        const htmlContent = fs.readFileSync('message.html', 'utf8');
+
+        console.log(`🚀 Bulk sending started for ${emails.length} recipients...`);
+
+        for (const target of emails) {
+            await transporter.sendMail({
+                from: `"${senderName}" <admin@sad360htd.com>`,
+                to: target,
+                subject: subject,
+                html: htmlContent // الرسالة من الملف مباشرة
+            });
+            console.log(`✅ Dispatched to: ${target}`);
+        }
+
+        console.log("🏁 Campaign Finished Successfully.");
     } catch (error) {
-        console.error("❌ Transmission Error:", error.message);
+        console.error("❌ Error:", error.message);
     }
 }
 
-run();
+runAutoPilot();
