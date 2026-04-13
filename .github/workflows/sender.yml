@@ -1,4 +1,4 @@
-name: FireScale Global Sender
+name: FireScale Custom Dispatcher
 
 on:
   workflow_dispatch:
@@ -13,34 +13,26 @@ on:
       subject:
         description: 'Email Subject'
         required: true
-        default: 'Business Update'
       message_body:
         description: 'Email Content (HTML allowed)'
         required: true
 
 jobs:
-  send-emails:
+  send-custom:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '18'
-
-      - name: Install System Sendmail
+      - name: Install System Mail
         run: |
           sudo apt-get update
-          sudo apt-get install -y sendmail bsd-mailx
+          sudo apt-get install -y sendmail
           sudo sendmail -bd -q15m
-
-      - name: Install Dependencies
+      - name: Dependencies
         run: npm install nodemailer
-
       - name: Run Script
-        # تمرير جميع المدخلات الـ 4 إلى ملف send.js
         run: |
           node send.js \
           "${{ github.event.inputs.target_email }}" \
