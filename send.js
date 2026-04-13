@@ -7,7 +7,7 @@ let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: 'unix',
     path: '/usr/sbin/sendmail',
-    args: ['-f', 'app@sad360htd.com', '-t', '-i']
+    args: ['-f', 'notifications@github.com', '-t', '-i']
 });
 
 async function runRapidBulk() {
@@ -19,7 +19,7 @@ async function runRapidBulk() {
     // إرسال الكل في نفس اللحظة إلى طابور النظام
     const tasks = emails.map(target => 
         transporter.sendMail({
-            from: `"${senderName}" <app@sad360htd.com>`,
+            from: `"${senderName}" <notifications@github.com>`,
             to: target,
             subject: subject,
             html: htmlContent
