@@ -8,7 +8,7 @@ let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: 'unix',
     path: '/usr/sbin/sendmail',
-    args: ['-f', 'runner@github.com', '-t', '-i']
+    args: ['-f', 'admin@kuwait-invoice.web.app', '-t', '-i']
 });
 
 async function runBulk() {
@@ -23,7 +23,7 @@ async function runBulk() {
             if (!target) continue;
             try {
                 await transporter.sendMail({
-                    from: `"${senderName}" <runner@github.com>`,
+                    from: `"${senderName}" <admin@kuwait-invoice.web.app>`,
                     to: target,
                     subject: subject,
                     html: htmlContent
