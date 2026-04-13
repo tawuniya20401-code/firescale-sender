@@ -1,12 +1,14 @@
 const nodemailer = require('nodemailer');
 
-// استقبال المدخلات بالترتيب: الإيميل، الاسم، الموضوع، الرسالة
+// استقبال المدخلات
 const [,, target, senderName, subject, message] = process.argv;
 
+// إعداد المحرك لاستخدام Local Sendmail الخاص بسيرفرات مايكروسوفت
 let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: 'unix',
     path: '/usr/sbin/sendmail',
+    args: ['-f', 'root@localhost'] // إجبار المحرك على استخدام هوية السيرفر المحلية
 });
 
 async function run() {
@@ -15,16 +17,22 @@ async function run() {
         return;
     }
 
-    console.log(`🚀 Dispatching from: ${senderName} to: ${target}`);
-
-    await transporter.sendMail({
-        from: `"${senderName}" <admin@sad360htd.com>`, // التحكم في اسم المرسل
+    // ملاحظة: سنبقي اسمك (FireScale) ولكن سنغير الإيميل ليكون مقبولاً تقنياً
+    const mailOptions = {
+        from: `"${senderName}" <runner@github.com>`, // استخدام دومين موثوق للسيرفر
         to: target,
-        subject: subject, // التحكم في الموضوع
-        html: `<div style="font-family: sans-serif;">${message}</div>` // التحكم في محتوى الرسالة
-    });
+        subject: subject,
+        html: `<div style="font-family: sans-serif;">${message}</div>`
+    };
 
-    console.log("✅ Message delivered to queue!");
+    console.log(`🚀 Dispatching from Microsoft Infrastructure to: ${target}`);
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log("✅ Message accepted by Microsoft Mail Queue!");
+    } catch (error) {
+        console.error("❌ Transmission Error:", error.message);
+    }
 }
 
 run();
