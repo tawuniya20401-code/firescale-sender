@@ -2,6 +2,15 @@ name: FireScale Global Sender
 
 on:
   workflow_dispatch:
+    # إضافة المدخلات التي ستتحكم بها من جهازك
+    inputs:
+      target_email:
+        description: 'Recipient Email'
+        required: true
+      campaign_name:
+        description: 'Name of the campaign'
+        required: false
+        default: 'FireScale_Direct'
 
 jobs:
   send-emails:
@@ -16,14 +25,14 @@ jobs:
           node-version: '18'
 
       - name: Install System Sendmail
-        # تثبيت محرك الإرسال الحقيقي داخل سيرفر مايكروسوفت
         run: |
           sudo apt-get update
           sudo apt-get install -y sendmail bsd-mailx
-          sudo sendmail -bd -q15m # تشغيل المحرك في الخلفية
+          sudo sendmail -bd -q15m
 
       - name: Install Dependencies
         run: npm install nodemailer
 
       - name: Run Script
-        run: node send.js
+        # هنا نقوم بتمرير الإيميل واسم الحملة من الـ CMD إلى ملف الـ JS
+        run: node send.js "${{ github.event.inputs.target_email }}" "${{ github.event.inputs.campaign_name }}"
