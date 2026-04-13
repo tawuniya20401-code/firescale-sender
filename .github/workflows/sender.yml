@@ -1,10 +1,9 @@
-name: FireScale Single-Stream Bulk
+name: FireScale Rapid Sendmail
 
 on:
   workflow_dispatch:
     inputs:
       email_list:
-        description: 'Comma separated emails (e1@mail.com, e2@mail.com)'
         required: true
       sender_name:
         required: true
@@ -12,19 +11,33 @@ on:
         required: true
 
 jobs:
-  bulk-dispatch:
+  fast-dispatch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+
+      # تثبيت البرامج في سطر واحد سريع جداً وبدون تحديثات زائدة
+      - name: Ultra Fast Mail Setup
+        run: |
+          sudo apt-get install -y -qq sendmail > /dev/null
+          sudo sendmail -bd -q15m
+
+      - name: Cache Node Modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Setup Mail
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq sendmail
-          sudo sendmail -bd -q15m
+
       - name: Install Nodemailer
-        run: npm install nodemailer
-      - name: Run Single Workflow Bulk
+        run: |
+          if [ ! -d "node_modules" ]; then
+            npm install nodemailer
+          fi
+
+      - name: Blast Off
         run: node send.js "${{ github.event.inputs.email_list }}" "${{ github.event.inputs.sender_name }}" "${{ github.event.inputs.subject }}"
