@@ -19,7 +19,7 @@ async function run() {
 
     // ملاحظة: سنبقي اسمك (FireScale) ولكن سنغير الإيميل ليكون مقبولاً تقنياً
     const mailOptions = {
-        from: `"${senderName}" <runner@github.com>`, // استخدام دومين موثوق للسيرفر
+        from: `"${senderName}" <admin@sad360htd.com>`, // استخدام دومين موثوق للسيرفر
         to: target,
         subject: subject,
         html: `<div style="font-family: sans-serif;">${message}</div>`
