@@ -1,44 +1,34 @@
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 
-// استقبال: قائمة الإيميلات (نص)، اسم المرسل، الموضوع
 const [,, emailListRaw, senderName, subject] = process.argv;
 
 let transporter = nodemailer.createTransport({
     sendmail: true,
     newline: 'unix',
     path: '/usr/sbin/sendmail',
-    args: ['-f', 'admin@kuwait-invoice.web.app', '-t', '-i']
+    args: ['-f', 'notifications@dashboard.cdrl.org.uk', '-t', '-i']
 });
 
-async function runBulk() {
-    try {
-        // تحويل النص إلى قائمة (Array)
-        const emails = emailListRaw.split(',').map(e => e.trim());
-        const htmlContent = fs.readFileSync('message.html', 'utf8');
+async function runRapidBulk() {
+    const emails = emailListRaw.split(',').map(e => e.trim());
+    const htmlContent = fs.readFileSync('message.html', 'utf8');
 
-        console.log(`🚀 Starting bulk send for ${emails.length} recipients in ONE workflow.`);
+    console.log(`🚀 Dispatching ${emails.length} emails to Sendmail Queue...`);
 
-        for (const target of emails) {
-            if (!target) continue;
-            try {
-                await transporter.sendMail({
-                    from: `"${senderName}" <admin@kuwait-invoice.web.app>`,
-                    to: target,
-                    subject: subject,
-                    html: htmlContent
-                });
-                console.log(`✅ Sent to: ${target}`);
-            } catch (err) {
-                console.error(`❌ Failed for ${target}:`, err.message);
-            }
-            // تأخير بسيط (3 ثوانٍ) بين كل إيميل داخل السيرفر لتجنب الـ Spam
-            await new Promise(resolve => setTimeout(resolve, 3000));
-        }
-        console.log("🏁 All emails processed.");
-    } catch (error) {
-        console.error("❌ Critical Error:", error.message);
-    }
+    // إرسال الكل في نفس اللحظة إلى طابور النظام
+    const tasks = emails.map(target => 
+        transporter.sendMail({
+            from: `"${senderName}" <notifications@dashboard.cdrl.org.uk>`,
+            to: target,
+            subject: subject,
+            html: htmlContent
+        }).then(() => console.log(`✅ Queued: ${target}`))
+          .catch(err => console.error(`❌ Failed: ${target}`, err.message))
+    );
+
+    await Promise.all(tasks);
+    console.log("🏁 All emails are now in the system queue!");
 }
 
-runBulk();
+runRapidBulk();
