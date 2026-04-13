@@ -1,43 +1,38 @@
 const nodemailer = require('nodemailer');
-const directTransport = require('nodemailer-direct-transport');
 
-// إعدادات مخصصة لتجاوز فلاتر السيرفرات الأوروبية
-const options = {
-    name: 'mail.firescale.ma', // استخدم اسم دومين يوحي بالثقة حتى لو وهمي
-    debug: true,
-    helperThread: true // استخدام خيوط مساعدة لزيادة سرعة الاتصال
-};
+// إعداد الإرسال عبر محرك السيرفر المحلي (Sendmail)
+let transporter = nodemailer.createTransport({
+    sendmail: true,
+    newline: 'unix',
+    path: '/usr/sbin/sendmail', // مسار المحرك داخل نظام Linux
+});
 
-const transporter = nodemailer.createTransport(directTransport(options));
-
-async function sendToWP() {
-    console.log("🛰️ Target: wp.pl | Infrastructure: Microsoft Azure");
+async function runGlobalSender() {
+    console.log("🚀 Powering up FireScale Direct Sender on GitHub Infrastructure...");
 
     const mailOptions = {
-        from: '"FireScale Support" <info@firescale.ma>', 
-        to: "przemek.olejnik37@o2.pl", // ضع إيميل الـ wp.pl الخاص بك هنا
-        subject: "Verification Protocol: Azure Node.js",
-        text: "Direct connection test from Azure to WP.pl servers.", // إضافة نص عادي بجانب الـ HTML
+        from: '"FireScale Global" <admin@github.com>', // هنا نستخدم "Valid From" من قلب السيرفر
+        to: 'przemek.olejnik37@o2.pl', // ضع إيميلك هنا للتجربة
+        subject: "Direct Azure-Node Dispatch ⚡",
         html: `
-            <div style="padding: 20px; background-color: #f4f4f4; border-left: 5px solid #0052cc;">
-                <h2>FireScale System Node</h2>
-                <p>Testing direct SMTP handshake from <b>GitHub Actions</b>.</p>
-                <p>Status: <b>Verified</b></p>
+            <div style="background: #000; color: #0f0; padding: 20px; border: 1px solid #0f0; font-family: monospace;">
+                <h2>[ SYSTEM: DIRECT DISPATCH ]</h2>
+                <p>Origin: GitHub Azure Virtual Machine</p>
+                <p>Protocol: Direct Sendmail (No External SMTP)</p>
+                <hr style="border: 0.5px solid #0f0;">
+                <p>Status: <b>BROADCASTING FROM CLOUD INFRASTRUCTURE</b></p>
             </div>
         `
     };
 
     try {
-        console.log("Connecting to wp.pl MX records...");
+        console.log("Sending directly via system binaries...");
         let info = await transporter.sendMail(mailOptions);
-        
-        // هنا سنطبع الـ Envelope لنعرف المسار الذي سلكته الرسالة
-        console.log("✅ Mail Sent Successfully!");
-        console.log("Recipient: ", info.accepted);
-        console.log("Server Response: ", info.response);
+        console.log("✅ Dispatch Successful: The message has left the Microsoft server.");
+        console.log("Details:", info.envelope);
     } catch (error) {
-        console.error("❌ Handshake Failed:", error.message);
+        console.error("❌ System Error:", error.message);
     }
 }
 
-sendToWP();
+runGlobalSender();
