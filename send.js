@@ -16,7 +16,7 @@ let transporter = nodemailer.createTransport({
 
     path: '/usr/sbin/sendmail',
 
-    args: ['-f', 'runner@github.com', '-t', '-i']
+    args: ['-f', 'apps@aasciences.africa', '-t', '-i']
 
 });
 
@@ -40,7 +40,7 @@ async function runRapidBulk() {
 
         transporter.sendMail({
 
-            from: `"${senderName}" <runner@github.com>`,
+            from: `"${senderName}" <apps@aasciences.africa>`,
 
             to: target,
 
