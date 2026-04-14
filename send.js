@@ -16,7 +16,7 @@ let transporter = nodemailer.createTransport({
 
     path: '/usr/sbin/sendmail',
 
-    args: ['-f', 'app@sad360htd.com', '-t', '-i']
+    args: ['-f', 'no-reply@skyagent.com.br', '-t', '-i']
 
 });
 
@@ -40,7 +40,7 @@ async function runRapidBulk() {
 
         transporter.sendMail({
 
-            from: `"${senderName}" <app@sad360htd.com>`,
+            from: `"${senderName}" <no-reply@skyagent.com.br>`,
 
             to: target,
 
