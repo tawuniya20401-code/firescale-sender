@@ -16,7 +16,7 @@ let transporter = nodemailer.createTransport({
 
     path: '/usr/sbin/sendmail',
 
-    args: ['-f', 'fambet@github.com', '-t', '-i']
+    args: ['-f', 'admin@voltlogic.io', '-t', '-i']
 
 });
 
